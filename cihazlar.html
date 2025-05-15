@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ThingsBoard Cihaz Paneli</title>
+  <link rel="stylesheet" href="cihazlar.css" />
+</head>
+<body>
+  <header>
+    <div class="header-içeriği">
+      <div class="logo">Yönetim Paneli</div>
+      <div class="user-info">
+        <button class="cıkıs-buton">Çıkış Yap</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="header">
+      <h1>ThingsBoard Cihaz İzleme </h1>
+      <div class="device-selector">
+        <label for="device-select">Cihaz Seçimi:</label>
+        <select id="device-select"></select>
+      </div>
+    </div>
+
+    <div class="loading" id="loading-indicator">
+      <p>Veriler yükleniyor...</p>
+    </div>
+
+    <div class="dashboard" id="dashboard" style="display:none;">
+      <div class="widgets-row" id="widgets-row"></div>
+
+      <div class="widget">
+        <div class="widget-header">
+          <h3>Son Gelen Veriler</h3>
+          <span id="last-updated">Son güncelleme: --:--:--</span>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Parametre</th>
+              <th>Değer</th>
+              <th>Zaman</th>
+            </tr>
+          </thead>
+          <tbody id="data-table-body"></tbody>
+        </table>
+        <button class="refresh-btn" id="refresh-btn">Şimdi Yenile</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="cihazlar.js"></script>
+</body>
+</html>

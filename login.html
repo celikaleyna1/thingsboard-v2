@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+      <div class="login_container">
+        <h1>GİRİŞ YAP</h1>
+        <form id="loginForm">
+            <div class="input_group">
+                <label for="username">Kullanıcı Adı</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+
+            <div class="input_group">
+                <label for="password">Şifre</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <div class="input_group">
+                <label for="postName">Post Name</label>
+                <input type="text" id="postName" name="postName">
+            </div>
+
+            <button type="submit">Giriş Yap</button>
+
+            <div id="errorMessage" class="errorMessage" style="display:none;">
+                Kullanıcı adı veya şifre hatalı!
+            </div>
+        </form>
+    </div>
+  
+   
+ <script src="login.js"></script>
+</body>
+</html>
