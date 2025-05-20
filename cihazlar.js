@@ -35,10 +35,16 @@ document.addEventListener("DOMContentLoaded", () => {
     option.textContent = name;
     deviceSelect.appendChild(option);
   }
+
   startDataPolling();
+  pingToBackend(); 
 });
 
-deviceSelect.addEventListener("change", startDataPolling);
+deviceSelect.addEventListener("change", () => {
+  startDataPolling();
+  pingToBackend(); 
+});
+
 refreshBtn.addEventListener("click", () => fetchDeviceData(true));
 
 function startDataPolling() {
@@ -86,9 +92,9 @@ async function fetchDeviceData(first = false) {
     activeKeys.forEach((key) => {
       const realVal = telemetry[key]?.[0]?.value;
       const fallback = {
-        temperature: getRandom(15, 35),
-        humidity: getRandom(40, 80),
-        pressure: getRandom(950, 1050)
+        temperature: getRandom(35, 70),
+        humidity: getRandom(30, 80),
+        pressure: getRandom(750, 1050)
       }[key] || getRandom(0, 100);
 
       data[key] = isNaN(realVal) || realVal === undefined
@@ -153,3 +159,97 @@ function updateDataTable(keys, data) {
     });
   });
 }
+
+
+document.addEventListener("DOMContentLoaded", function() {
+  document.getElementById("pdfAktar").addEventListener("click", function () {
+    if (dashboard.style.display === "none") {
+      alert("PDF oluşturmak için önce bir cihaz seçin!");
+      return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.text("Cihaz Telemetri Verileri", 14, 10);
+
+    const selectedDeviceName = deviceSelect.value;
+    doc.text(`Cihaz: ${selectedDeviceName}`, 14, 20);
+
+    const rows = [];
+    dataTableBody.querySelectorAll("tr").forEach(tr => {
+      const row = Array.from(tr.querySelectorAll("td")).map(td => td.textContent.trim());
+      rows.push(row);
+    });
+
+    doc.autoTable({
+      head: [['Parametre', 'Deger', 'Zaman']],
+      body: rows,
+      startY: 25
+    });
+
+    doc.save(`${selectedDeviceName}_verileri.pdf`);
+  });
+
+  document.getElementById("excelbtn").addEventListener("click", function () {
+    if (dashboard.style.display === "none") {
+      alert("Excel oluşturmak için önce bir cihaz seçin!");
+      return;
+    }
+
+    const selectedDeviceName = deviceSelect.value;
+    const now = new Date().toLocaleString();
+
+    const cihazBilgiData = [
+      ["Cihaz Telemetri Verileri"],
+      ["Cihaz Adı", selectedDeviceName],
+      ["Rapor Tarihi", now],
+      [],
+      ["Telemetri Verileri"],
+      ["Parametre", "Deger", "Zaman"]
+    ];
+
+    const veriSatirlari = [];
+    dataTableBody.querySelectorAll("tr").forEach(tr => {
+      const satir = Array.from(tr.querySelectorAll("td")).map(td => td.textContent.trim());
+      veriSatirlari.push(satir);
+    });
+
+    const finalVeri = cihazBilgiData.concat(veriSatirlari);
+
+    const ws = XLSX.utils.aoa_to_sheet(finalVeri);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Cihaz Verileri");
+
+    XLSX.writeFile(wb, `${selectedDeviceName}_verileri.xlsx`);
+  });
+});
+
+function detectDevice() {
+  const ua = navigator.userAgent;
+  if (/mobile/i.test(ua)) return "Mobil";
+  if (/tablet/i.test(ua)) return "Tablet";
+  return "PC";
+}
+
+function pingGonder() {
+  const payload = {
+    time: new Date().toISOString(),
+    userAgent: navigator.userAgent,
+    page: window.location.href,
+    device: detectDevice()
+  };
+
+  fetch("ping.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  })
+  .then(res => res.json())
+  .then(data => console.log("Ping sonucu:", data))
+  .catch(err => console.error("Ping hatası:", err));
+}
+
+window.addEventListener("load", pingGonder);
+
+
